@@ -9,6 +9,7 @@ public class CharacterMove : MonoBehaviour
     float gravity = 10;
     float verticalVelocity = 0;
     public float jump = 10;
+     
     // Start is called before the first frame update
     void Start()
     {
@@ -21,7 +22,10 @@ public class CharacterMove : MonoBehaviour
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
 
-        Vector3 moveDirection = new Vector3(horizontal, 0, vertical);
+        bool isSprint = Input.GetKey(KeyCode.LeftShift);
+        float sprinting = isSprint ? 3.5f : 1;
+
+            Vector3 moveDirection = new Vector3(horizontal, 0, vertical);
 
         if (Controller.isGrounded)
         {
@@ -39,8 +43,13 @@ public class CharacterMove : MonoBehaviour
         }
 
         moveDirection = Camera.main.transform.TransformDirection(moveDirection);
-        moveDirection = new Vector3(moveDirection.x, verticalVelocity, moveDirection.z);
 
-        Controller.Move( moveDirection * Time.deltaTime * speed);
+        moveDirection = new Vector3(
+            moveDirection.x * speed * sprinting
+            , verticalVelocity
+            , moveDirection.z * speed*sprinting
+            );
+
+        Controller.Move( moveDirection * Time.deltaTime );
     }
 }
