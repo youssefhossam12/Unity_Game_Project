@@ -5,6 +5,7 @@ using UnityEngine;
 public class CharacterMove : MonoBehaviour
 {
     CharacterController Controller;
+    Animator anime;
     public float speed = 5;
     float gravity = 10;
     float verticalVelocity = 0;
@@ -14,6 +15,7 @@ public class CharacterMove : MonoBehaviour
     void Start()
     {
         Controller = GetComponent<CharacterController>();
+        anime = GetComponentInChildren<Animator>();
     }
 
     // Update is called once per frame
@@ -25,7 +27,14 @@ public class CharacterMove : MonoBehaviour
         bool isSprint = Input.GetKey(KeyCode.LeftShift);
         float sprinting = isSprint ? 3.5f : 1;
 
+        if (Input.GetMouseButtonDown(0))
+        {
+            anime.SetTrigger("Attack");
+        }
+
             Vector3 moveDirection = new Vector3(horizontal, 0, vertical);
+        anime.SetFloat("Speed", Mathf.Clamp(moveDirection.magnitude, 0, 0.5f) + (isSprint ? 0.5f : 0));
+
 
         if (Controller.isGrounded)
         {
@@ -36,7 +45,7 @@ public class CharacterMove : MonoBehaviour
             verticalVelocity -= gravity * Time.deltaTime;
         
 
-        if (moveDirection.magnitude > 0.1)
+        if (moveDirection.magnitude > 0.1f)
         {
             float angle = Mathf.Atan2(moveDirection.x, moveDirection.z) * Mathf.Rad2Deg + Camera.main.transform.eulerAngles.y;
             transform.rotation = Quaternion.Euler(0, angle, 0);
@@ -51,5 +60,7 @@ public class CharacterMove : MonoBehaviour
             );
 
         Controller.Move( moveDirection * Time.deltaTime );
+        
     }
+
 }
